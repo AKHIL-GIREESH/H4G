@@ -25,6 +25,12 @@ const groupSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "Channel",
         }
+    ],
+    invites: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Group",
+        }
     ]
 });
 
