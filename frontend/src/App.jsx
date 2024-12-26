@@ -1,12 +1,18 @@
 import './App.css'
-import { Button } from "@/components/ui/button"
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { Routes, Route, Navigate } from "react-router-dom";
+import Chatview from './pages/chatview'
 
 function App() {
 
   return (
     <>
-      <h1>React App</h1>
-      <Button>Click Me</Button>
+       <Routes>
+        {/* <Route path="/" element={<Navigate to="/chat" />} /> */}
+        <Route path="/chat" element={<Chatview />} />
+      </Routes> 
+    <ToastContainer />
     </>
   )
 }
