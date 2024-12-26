@@ -34,6 +34,22 @@ export function Whiteboard() {
     }
   }, [])
 
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (canvas) {
+      const resizeCanvas = () => {
+        const parent = canvas.parentElement
+        if (parent) {
+          canvas.width = parent.clientWidth
+          canvas.height = parent.clientHeight
+        }
+      }
+      resizeCanvas()
+      window.addEventListener('resize', resizeCanvas)
+      return () => window.removeEventListener('resize', resizeCanvas)
+    }
+  }, [])
+
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current
     if (canvas) {
@@ -76,15 +92,19 @@ export function Whiteboard() {
       reader.onload = (event) => {
         const img = new Image()
         img.onload = () => {
-          const newImage: Image = {
-            id: Date.now().toString(),
-            src: event.target?.result as string,
-            x: 0,
-            y: 0,
-            width: img.width,
-            height: img.height
+          const canvas = canvasRef.current
+          if (canvas) {
+            const scale = Math.min(canvas.width / img.width, canvas.height / img.height, 1)
+            const newImage: Image = {
+              id: Date.now().toString(),
+              src: event.target?.result as string,
+              x: 0,
+              y: 0,
+              width: img.width * scale,
+              height: img.height * scale
+            }
+            setImages(prevImages => [...prevImages, newImage])
           }
-          setImages(prevImages => [...prevImages, newImage])
         }
         img.src = event.target?.result as string
       }
@@ -126,8 +146,8 @@ export function Whiteboard() {
   }
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="mb-4 flex space-x-2">
+    <div className="flex flex-col items-center w-full h-full px-4 sm:px-6 md:px-8 lg:px-12">
+      <div className="mb-4 flex flex-wrap justify-center gap-2 w-full">
         <Button onClick={() => setTool('draw')} variant={tool === 'draw' ? 'default' : 'outline'}>
           <Pencil className="h-4 w-4 mr-2" />
           Draw
@@ -155,12 +175,10 @@ export function Whiteboard() {
           className="h-10 w-10 border border-gray-300 rounded"
         />
       </div>
-      <div className="relative">
+      <div className="relative w-full max-w-5xl h-[calc(100vh-200px)] overflow-hidden">
         <canvas
           ref={canvasRef}
-          width={800}
-          height={600}
-          className="border border-gray-300"
+          className="border border-gray-300 w-full h-full"
           onMouseDown={tool === 'draw' ? startDrawing : tool === 'erase' ? erase : undefined}
           onMouseMove={tool === 'draw' ? draw : tool === 'erase' ? erase : undefined}
           onMouseUp={stopDrawing}
