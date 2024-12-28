@@ -1,5 +1,14 @@
 const GROUP = require("../model/group")
 
+const getAllGroups = async( req,res) => {
+    try{
+        const allGroups = await GROUP.find()
+        res.status(200).json({status:"SUCCESS",group:allGroups})
+    }catch(e){
+        console.log(e)
+    }
+}
+
 const createGroup = async (req,res) => {
     try{
         const {name,desc,members} = req.body
@@ -35,4 +44,4 @@ const addMembers = async ( req,res ) => {
     }
 }
 
-module.exports = {createGroup,inviteGroups,acceptInvite,addMembers}
+module.exports = {createGroup,inviteGroups,acceptInvite,addMembers,getAllGroups}
